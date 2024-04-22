@@ -1,0 +1,49 @@
+
+
+
+
+Database Schema
+Books Collection:
+
+_id: ObjectId (Primary Key)
+title: String
+author: String
+description: String
+genre: String
+coverImageUrl: String
+Reviews Collection:
+
+_id: ObjectId (Primary Key)
+bookId: ObjectId (Foreign Key referencing Books collection _id)
+rating: Number (Integer between 1 and 5)
+comment: String
+createdAt: Date
+updatedAt: Date
+
+
+API Endpoints
+Now, let's define the API endpoints for the backend:
+
+Retrieve Book Listings:
+
+Endpoint: GET /api/books
+Description: Retrieves a list of all books.
+Search for Books:
+Endpoint: GET /api/books/search
+Query Parameters: title, author, genre
+Description: Retrieves a list of books based on search criteria.
+Retrieve Book Details:
+Endpoint: GET /api/books/:id
+Description: Retrieves details of a specific book by ID.
+Submit User Review:
+Endpoint: POST /api/reviews
+Description: Submits a user review for a book.
+
+
+Request Body:
+json
+
+  "bookId": "<bookId>",
+  "rating": "<rating>",
+  "comment": "<comment>"
+}

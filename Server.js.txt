@@ -1,0 +1,58 @@
+// server.js
+const express = require('express');
+const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
+
+const app = express();
+const PORT = process.env.PORT || 5000;
+
+// MongoDB connection
+mongoose.connect('mongodb://localhost/bookstore', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  useCreateIndex: true,
+});
+
+// Models
+const Book = require('./models/Book');
+const Review = require('./models/Review');
+
+app.use(bodyParser.json());
+
+// Routes
+app.get('/api/books', async (req, res) => {
+  try {
+    const books = await Book.find();
+    res.json(books);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server Error' });
+  }
+});
+
+app.get('/api/books/:id', async (req, res) => {
+  try {
+    const book = await Book.findById(req.params.id);
+    res.json(book);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server Error' });
+  }
+});
+
+app.post('/api/reviews', async (req, res) => {
+  try {
+    const { bookId, rating, comment } = req.body;
+    const review = new Review({ bookId, rating, comment });
+    await review.save();
+    res.json(review);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server Error' });
+  }
+});
+
+// Start server
+app.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
+});

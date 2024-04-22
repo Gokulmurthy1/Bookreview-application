@@ -1,0 +1,64 @@
+// models/Book.js
+const mongoose = require('mongoose');
+
+const bookSchema = new mongoose.Schema({
+  title: { type: String, required: true },
+  author: { type: String, required: true },
+  description: String,
+  genre: String,
+  coverImageUrl: String,
+});
+
+module.exports = mongoose.model('Book', bookSchema);
+
+
+
+//
+
+const express = require('express');
+const router = express.Router();
+const Book = require('../models/Book');
+
+// Retrieve Book Listings
+router.get('/api/books', async (req, res) => {
+  try {
+    const books = await Book.find();
+    res.json(books);
+  } catch (error) {
+    console.error('Error fetching books:', error);
+    res.status(500).json({ message: 'Server Error' });
+  }
+});
+
+// Search for Books
+router.get('/api/books/search', async (req, res) => {
+  const { title, author, genre } = req.query;
+  const searchCriteria = {};
+  if (title) searchCriteria.title = new RegExp(title, 'i');
+  if (author) searchCriteria.author = new RegExp(author, 'i');
+  if (genre) searchCriteria.genre = new RegExp(genre, 'i');
+
+  try {
+    const books = await Book.find(searchCriteria);
+    res.json(books);
+  } catch (error) {
+    console.error('Error searching books:', error);
+    res.status(500).json({ message: 'Server Error' });
+  }
+});
+
+// Retrieve Book Details
+router.get('/api/books/:id', async (req, res) => {
+  try {
+    const book = await Book.findById(req.params.id);
+    if (!book) {
+      return res.status(404).json({ message: 'Book not found' });
+    }
+    res.json(book);
+  } catch (error) {
+    console.error('Error fetching book details:', error);
+    res.status(500).json({ message: 'Server Error' });
+  }
+});
+
+module.exports = router;
